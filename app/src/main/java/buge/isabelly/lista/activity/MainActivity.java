@@ -3,6 +3,9 @@ package buge.isabelly.lista.activity;
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,12 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import buge.isabelly.lista.R;
+import buge.isabelly.lista.adapter.MyAdapter;
 import buge.isabelly.lista.model.MyItem;
 
 public class MainActivity extends AppCompatActivity {
 
     static int NEW_ITEM_REQUEST = 1;
     List<MyItem> itens = new ArrayList<>();
+    MyAdapter myAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +41,37 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(i, NEW_ITEM_REQUEST);//executa o intent com o metodo startActivityForResult
             }
         });
+
+        RecyclerView rvItens = findViewById(R.id.rvItens);//obtemos o RecyclerView
+
+        myAdapter = new MyAdapter(this, itens);//cria myAdapter
+        rvItens.setAdapter(myAdapter);//seta myAdapter no RecyclerView
+
+        rvItens.setHasFixedSize(true);//indica ao RecycleView que nao tem variação de tamanho entre os itens da lista
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);//cria gerenciador de layout do tipo linear
+        rvItens.setLayoutManager(layoutManager);//seta gerenciador de layout no RecyclerView
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvItens.getContext(), DividerItemDecoration.VERTICAL);//criam decorador para a lista
+        rvItens.addItemDecoration(dividerItemDecoration);//setamos o decorador no RecyclerView
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //verifica se as condicoes foram cumpridas
         if (requestCode == NEW_ITEM_REQUEST){
             if (resultCode == Activity.RESULT_OK) {
+                //btemos os dados retornados por NewItemActivity e os guardamos dentro de myItem
                 MyItem myItem = new MyItem();
                 myItem.title = data.getStringExtra("title");
                 MyItem.description = data.getStringExtra("description");
                 myItem.photo = data.getData();
 
-                itens.add(myItem);
+                itens.add(myItem);//adicionamos o item a uma lista de itens
+                myAdapter.notifyItemInserted(itens.size()-1);// notifica o Adapter para que o novo item seja exibido na tela
             }
         }
     }
+
 }
