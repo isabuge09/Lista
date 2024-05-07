@@ -2,6 +2,7 @@ package buge.isabelly.lista.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,17 +16,25 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import buge.isabelly.lista.R;
+import buge.isabelly.lista.model.NewItemActivityViewModel;
 
 public class NewItemActivity extends AppCompatActivity {
 
+
     static int PHOTO_PICKER_REQUEST = 1;
-    Uri photoSelected = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_item);
 
+        NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
+
+        Uri selectedPhotoLocation = vm.getSelectedPhotoLocation();
+        if (selectedPhotoLocation != null){
+            ImageView imvphotoPreview = findViewById(R.id.imvPhotoPreview);
+            imvphotoPreview.setImageURI(selectedPhotoLocation);
+        }
 
         ImageButton imgCI = findViewById(R.id.imbCI);//obtemos o botao pelo seu id
         imgCI.setOnClickListener(new View.OnClickListener() {//obtem o click do botao
@@ -42,6 +51,7 @@ public class NewItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {//metodo executado quando apos o click do botao
 
+                Uri photoSelected = vm.getSelectedPhotoLocation();
                 //verifica se os campo de imagem foi preenchido pelo usuario, caso nao esteja mostra-se uma mensagem de erro
                 if(photoSelected == null){
                     Toast.makeText(NewItemActivity.this, "É necessário selecionar uma imagem!",  Toast.LENGTH_LONG).show();
@@ -79,9 +89,12 @@ public class NewItemActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PHOTO_PICKER_REQUEST){//verifica se requestCode e referente ao fornecido na startActiviyForResult
             if(resultCode == Activity.RESULT_OK) {//verificamos se resultCode é um codigo bem sucedido
-                photoSelected = data.getData();//resultado caso as condicoes seja verdadeiras
+                Uri photoSelected = data.getData();//resultado caso as condicoes seja verdadeiras
                 ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);//obtem o Uri da imagem e guarda dentro do atributo de classe photoSelected
                 imvfotoPreview.setImageURI(photoSelected);//resultado caso as condicoes seja verdadeiras
+
+                NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
+                vm.setSelectedPhotoLocation(photoSelected);
             }
         }
     }

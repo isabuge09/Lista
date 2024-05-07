@@ -3,28 +3,33 @@ package buge.isabelly.lista.activity;
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import buge.isabelly.lista.R;
 import buge.isabelly.lista.adapter.MyAdapter;
+import buge.isabelly.lista.model.MainActivityViewModel;
 import buge.isabelly.lista.model.MyItem;
+import buge.isabelly.lista.util.Util;
 
 public class MainActivity extends AppCompatActivity {
 
     static int NEW_ITEM_REQUEST = 1;
-    List<MyItem> itens = new ArrayList<>();
     MyAdapter myAdapter;
 
 
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         RecyclerView rvItens = findViewById(R.id.rvItens);//obtemos o RecyclerView
+        MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
+        List<MyItem> itens = vm.getItems();
 
         myAdapter = new MyAdapter(this, itens);//cria myAdapter
         rvItens.setAdapter(myAdapter);//seta myAdapter no RecyclerView
@@ -66,7 +73,18 @@ public class MainActivity extends AppCompatActivity {
                 MyItem myItem = new MyItem();
                 myItem.title = data.getStringExtra("title");
                 MyItem.description = data.getStringExtra("description");
-                myItem.photo = data.getData();
+                Uri selectedPhotoURI = data.getData();
+
+                try {
+                    Bitmap photo = Util.getBitmap(MainActivity.this, selectedPhotoURI, 100, 100);
+                    myItem.photo = photo;
+                }
+                catch (FileNotFoundException e){
+                    e.printStackTrace();
+                }
+
+                MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
+                List<MyItem> itens = vm.getItems();
 
                 itens.add(myItem);//adicionamos o item a uma lista de itens
                 myAdapter.notifyItemInserted(itens.size()-1);// notifica o Adapter para que o novo item seja exibido na tela
