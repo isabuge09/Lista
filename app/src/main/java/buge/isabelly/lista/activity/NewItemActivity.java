@@ -28,9 +28,11 @@ public class NewItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_item);
 
-        NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
+        NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);//obtemm ViewModel referente a NewItemActivity (NewItemActivityViewModel)
 
-        Uri selectedPhotoLocation = vm.getSelectedPhotoLocation();
+        Uri selectedPhotoLocation = vm.getSelectedPhotoLocation();//obtem o endereço URI guardado dentro do ViewModel
+
+        //verifica se o usuario ja tem imagens escolhidas antes de rotacionar
         if (selectedPhotoLocation != null){
             ImageView imvphotoPreview = findViewById(R.id.imvPhotoPreview);
             imvphotoPreview.setImageURI(selectedPhotoLocation);
@@ -93,8 +95,8 @@ public class NewItemActivity extends AppCompatActivity {
                 ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);//obtem o Uri da imagem e guarda dentro do atributo de classe photoSelected
                 imvfotoPreview.setImageURI(photoSelected);//resultado caso as condicoes seja verdadeiras
 
-                NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
-                vm.setSelectedPhotoLocation(photoSelected);
+                NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);//obtem o ViewModel dentro do método onActivityResult
+                vm.setSelectedPhotoLocation(photoSelected);//guarda dentro do ViewModel o endereço URI da imagem escolhida
             }
         }
     }

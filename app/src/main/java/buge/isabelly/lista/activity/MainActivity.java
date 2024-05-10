@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         RecyclerView rvItens = findViewById(R.id.rvItens);//obtemos o RecyclerView
-        MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
-        List<MyItem> itens = vm.getItems();
+        MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);//obtem o ViewModel referente a MainActivity (MainActivityViewModel)
+        List<MyItem> itens = vm.getItems();//a lista de itens obtida segundo o ViewModel
 
         myAdapter = new MyAdapter(this, itens);//cria myAdapter
         rvItens.setAdapter(myAdapter);//seta myAdapter no RecyclerView
@@ -69,22 +69,22 @@ public class MainActivity extends AppCompatActivity {
         //verifica se as condicoes foram cumpridas
         if (requestCode == NEW_ITEM_REQUEST){
             if (resultCode == Activity.RESULT_OK) {
-                //btemos os dados retornados por NewItemActivity e os guardamos dentro de myItem
+                //obtemos os dados retornados por NewItemActivity e os guardamos dentro de myItem
                 MyItem myItem = new MyItem();
                 myItem.title = data.getStringExtra("title");
                 MyItem.description = data.getStringExtra("description");
                 Uri selectedPhotoURI = data.getData();
 
                 try {
-                    Bitmap photo = Util.getBitmap(MainActivity.this, selectedPhotoURI, 100, 100);
-                    myItem.photo = photo;
+                    Bitmap photo = Util.getBitmap(MainActivity.this, selectedPhotoURI, 100, 100);//usamos funcao do arquivo Util.java que faz com que crie uma copia da imagem original, nao precisando mias do endereco URI
+                    myItem.photo = photo;//guardamos o Bitmap da imagem
                 }
-                catch (FileNotFoundException e){
+                catch (FileNotFoundException e){//se nao encontrar o arquivo de imagem a excecao e disparada
                     e.printStackTrace();
                 }
 
-                MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
-                List<MyItem> itens = vm.getItems();
+                MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);//obtemos a lista de itens que o ViewModel guarda
+                List<MyItem> itens = vm.getItems();//guardamos o novo item na lista
 
                 itens.add(myItem);//adicionamos o item a uma lista de itens
                 myAdapter.notifyItemInserted(itens.size()-1);// notifica o Adapter para que o novo item seja exibido na tela
